@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 
 # For face detection we will use the Haar Cascade provided by OpenCV.
+# To reduce processing time, I need to point out where face is on the given image.
 cascadePath = "haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascadePath)
 
@@ -40,7 +41,7 @@ def get_images_and_labels(path):
     # return the images list and labels list
     return images, labels
 
-# Path to the faces Dataset :- fro training
+# Path to the faces Dataset :- for training
 path = './faces'
 
 # Call the get_images_and_labels function and get the face images and the 
@@ -51,20 +52,21 @@ cv2.destroyAllWindows()
 
 # Perform the tranining
 #recognizer.load('lbph_faces.xml')
-recognizer.train(images, np.array(labels))
-#recognizer.update(images, np.array(labels))
-recognizer.save('./lbph_faces.xml')
+recognizer.train(images, np.array(labels)) # for the firs time
+#recognizer.update(images, np.array(labels)) # for appending new pattern
+recognizer.save('./lbph_faces.xml') # save all patterns
 
 # Append the images with the extension .sad into image_paths
-test_path = './sad'
+test_path = './sad' # folder contains query images
 image_paths = [os.path.join(test_path, f) for f in os.listdir(test_path) if f.endswith('.sad')]
 
-
+#traverse to get all query images in sad folder
 for image_path in image_paths:
     predict_image_pil = Image.open(image_path).convert('L')
     predict_image = np.array(predict_image_pil, 'uint8')
     faces = faceCascade.detectMultiScale(predict_image)
     for (x, y, w, h) in faces:
+        # get predict result and confidence value
         nbr_predicted, conf = recognizer.predict(predict_image[y: y + h, x: x + w])
 
         nbr_actual = int(os.path.split(image_path)[1].split(".")[0].replace("subject", ""))
