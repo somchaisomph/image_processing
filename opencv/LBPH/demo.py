@@ -50,9 +50,9 @@ images, labels = get_images_and_labels(path)
 cv2.destroyAllWindows()
 
 # Perform the tranining
-recognizer.load('lbph_faces.xml')
-#recognizer.train(images, np.array(labels))
-recognizer.update(images, np.array(labels))
+#recognizer.load('lbph_faces.xml')
+recognizer.train(images, np.array(labels))
+#recognizer.update(images, np.array(labels))
 recognizer.save('./lbph_faces.xml')
 
 # Append the images with the extension .sad into image_paths
