@@ -210,22 +210,27 @@ def test_pyramid_down(image):
 	rows = 3
 	columns = 1
 	for i in range(len(gp_img)):
-		fig.add_subplot(rows, columns, i)
-    		plt.imshow(gp_img[i])
+		fig.add_subplot(rows, columns, i+1)
+		plt.title("Pyramid Level {}".format(i+1))
+		plt.imshow(gp_img[i])
 	plt.show()
-	
-if __name__ == "__main__":	
+
+def test_pyramid_up(image):
+	gp_img = gauss_pyramid(image,levels=1,direction='up')
+	fig=plt.figure(figsize=(8, 8))
+	rows = 3
+	columns = 1
+	for i in range(len(gp_img)):
+		fig.add_subplot(rows, columns, i+1)
+		plt.title("Pyramid Level {}".format(i+1))
+		plt.imshow(gp_img[i])
+	plt.show()
+		
+if __name__ == "__main__":
+	import matplotlib.pyplot as plt
+	import math
 	
 	img = io.imread('somchai.png')    # Load the image
-	img = color.rgb2gray(img) 	
-	
-	
-	#lapl_pyr_image1r  = lapl_pyramid(_img[0])
-	
-	#for m in _img :
-	#	print(m.shape)
-	ex_img = iexpand(img)
-	
-	plt.imshow(ex_img, cmap=plt.cm.gray)
-	#plt.axis('off')
-	plt.show()
+	img = color.rgb2gray(img) 
+	#test_pyramid_down(img)
+	test_pyramid_up(img)
