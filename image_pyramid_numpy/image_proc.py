@@ -1,6 +1,6 @@
 import numpy as np
 from skimage import io,color
-
+import matplotlib.pyplot as plt
 	
 '''generate a 5x5 kernel'''	
 def generating_kernel(a):
@@ -10,39 +10,29 @@ def generating_kernel(a):
 '''reduce image by 1/2'''
 def ireduce(image):
 	out = None
-	A_prev = image.reshape((1,image.shape[0],image.shape[1],1))
+	image = image.reshape((1,image.shape[0],image.shape[1],1))
 	kernel = generating_kernel(0.4)
-	#outimage = scipy.signal.convolve2d(image,kernel,'same')
 	kernel = kernel.reshape((kernel.shape[0],kernel.shape[1],1,1))
 	b = np.random.randn(1,1,1,1)
 	hparameters = {"pad" : 1,"stride": 1}
-	Z, cache_conv = conv_forward(A_prev, kernel, b, hparameters)
+	Z, cache_conv = conv_forward(image, kernel, b, hparameters)
 	out = Z[0,:,:,0][::2,::2]
 	return out
  
 '''expand image by factor of 2'''
-def iexpand(image):
-	out = None
-	kernel = generating_kernel(0.4)
-	outimage = np.zeros((image.shape[0]*2, image.shape[1]*2), dtype=np.float64)
-	outimage[::2,::2]=image[:,:]
-	out = 4*scipy.signal.convolve2d(outimage,kernel,'same')
-	return out
 	
 def iexpand(image):
 	out = None
-	kernel = generating_kernel(0.4)
-	
+	kernel = generating_kernel(0.4)	
 	kernel = kernel.reshape((kernel.shape[0],kernel.shape[1],1,1))
 	
 	outimage = np.zeros((image.shape[0]*2, image.shape[1]*2), dtype=np.float64)
 	outimage[::2,::2]=image[:,:]
 
-	A_prev = outimage.reshape((1,outimage.shape[0],outimage.shape[1],1))
-	#out = 4*scipy.signal.convolve2d(outimage,kernel,'same')
+	outimage = outimage.reshape((1,outimage.shape[0],outimage.shape[1],1))
 	b = np.random.randn(1,1,1,1)
 	hparameters = {"pad" : 1,"stride": 1}
-	Z, cache_conv = conv_forward(A_prev, kernel, b, hparameters)
+	Z, cache_conv = conv_forward(outimage, kernel, b, hparameters)
 
 	out = 4*Z[0,:,:,0] 
 	return out
@@ -212,33 +202,24 @@ def conv_forward(A_prev, W, b, hparameters):
 	# Making sure your output shape is correct
 	assert(Z.shape == (m, n_H, n_W, n_C))
 	
-	# Save information in "cache" for the backprop
-	cache = (A_prev, W, b, hparameters)
+	return Z
+
+def test_pyramid_down(image):
+	gp_img = gauss_pyramid(image,levels=2)
+	fig=plt.figure(figsize=(8, 8))
+	rows = 3
+	columns = 1
+	for i in range(len(gp_img)):
+		fig.add_subplot(rows, columns, i)
+    		plt.imshow(gp_img[i])
+	plt.show()
 	
-	return Z, cache	
-	
-if __name__ == "__main__":
-	import matplotlib.pyplot as plt
-	import math
+if __name__ == "__main__":	
 	
 	img = io.imread('somchai.png')    # Load the image
-	img = color.rgb2gray(img) 
+	img = color.rgb2gray(img) 	
 	
-	'''
-	A_prev = img.reshape((1,img.shape[0],img.shape[1],1))
-	W = generating_kernel(0.4)
-	W = W.reshape((W.shape[0],W.shape[1],1,1))
-	b = np.random.randn(1,1,1,1)
-	hparameters = {"pad" : 2,
-               "stride": 2}
-	Z, cache_conv = conv_forward(A_prev, W, b, hparameters)
-	tmp = Z[0,:,:,0]
-	print(tmp.shape)
-	reduced_img = tmp[::2,::2]
-	print(reduced_img.shape)
-	'''
 	
-	#_img = gauss_pyramid(img,levels=2)
 	#lapl_pyr_image1r  = lapl_pyramid(_img[0])
 	
 	#for m in _img :
